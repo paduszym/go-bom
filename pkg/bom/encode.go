@@ -110,7 +110,9 @@ func (op *encodeOp) encode(rv reflect.Value) error {
 		ft := t.Field(i)
 		if ft.IsExported() {
 			if name, ok := ft.Tag.Lookup("bom"); ok {
-				return op.encodeVar(name, rv.Field(i))
+				if err := op.encodeVar(name, rv.Field(i)); err != nil {
+					return err
+				}
 			}
 		}
 	}
