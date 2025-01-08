@@ -29,27 +29,31 @@ func (d *Decoder) Decode(v any) error {
 
 	var hdr header
 	if err := d.readHeader(&hdr); err != nil {
-		return err
+		return fmt.Errorf("bom: Decoder.Decode: %w", err)
 	}
 
 	if _, err := d.r.Seek(int64(hdr.IndexOffset), 0); err != nil {
-		return err
+		return fmt.Errorf("bom: Decoder.Decode: %w", err)
 	}
 	blocks, err := d.readIndex()
 	if err != nil {
-		return err
+		return fmt.Errorf("bom: Decoder.Decode: %w", err)
 	}
 
 	if _, err := d.r.Seek(int64(hdr.VarsOffset), 0); err != nil {
-		return err
+		return fmt.Errorf("bom: Decoder.Decode: %w", err)
 	}
 	vars := make(map[string]*decodedBlock)
 	if err := d.readVars(blocks, vars); err != nil {
-		return err
+		return fmt.Errorf("bom: Decoder.Decode: %w", err)
 	}
 
 	op := newDecodeOp(vars, blocks)
-	return op.decode(rv.Elem())
+	if err := op.decode(rv.Elem()); err != nil {
+		return fmt.Errorf("bom: Decoder.Decode: %w", err)
+	}
+
+	return nil
 }
 
 func (d *Decoder) readHeader(hdr *header) error {

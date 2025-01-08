@@ -25,23 +25,27 @@ func (e *Encoder) Encode(v any) error {
 
 	op := newEncodeOp()
 	if err := op.encode(rv); err != nil {
-		return err
+		return fmt.Errorf("bom: Encoder.Encode: %w", err)
 	}
 
 	hdr := op.createHeader()
 	if err := binaryWrite(e.w, hdr); err != nil {
-		return err
+		return fmt.Errorf("bom: Encoder.Encode: %w", err)
 	}
 
 	if err := e.writeVars(op.vars); err != nil {
-		return err
+		return fmt.Errorf("bom: Encoder.Encode: %w", err)
 	}
 
 	if err := e.writeIndex(op.blocks, hdr.IndexOffset+hdr.IndexLength); err != nil {
-		return err
+		return fmt.Errorf("bom: Encoder.Encode: %w", err)
 	}
 
-	return e.writeBlocks(op.blocks)
+	if err := e.writeBlocks(op.blocks); err != nil {
+		return fmt.Errorf("bom: Encoder.Encode: %w", err)
+	}
+
+	return nil
 }
 
 func (e *Encoder) writeVars(vars map[string]*encodedBlock) error {
