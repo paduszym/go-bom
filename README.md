@@ -20,13 +20,14 @@ type Person struct {
 
 func main() {
 	f, _ := os.Create("person.bom")
-    defer f.Close()
+	defer f.Close()
 
 	p := Person{Name: "John", Surname: "Doe"}
 	if err := bom.NewEncoder(f).Encode(p); err != nil {
 		log.Fatal(err)
 	}
 }
+
 ```
 
 ## Decoding
@@ -57,6 +58,7 @@ func main() {
 
 	fmt.Println(p)
 }
+
 ```
 
 ## Credits
